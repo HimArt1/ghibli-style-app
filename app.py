@@ -28,7 +28,7 @@ if uploaded_file:
                 output_url = replicate_client.run(
                     "fofr/anything-v4.0:7e0c09fc79ee8b19d4f804a8d3da8cf7e811b148a772dfb671a2c7c00c2c3c3b",
                     input={
-                        "image": uploaded_file,
+                        "image": BytesIO(uploaded_file.read()),
                         "prompt": "ghibli style, dreamy, soft colors, anime landscape, cinematic",
                         "num_inference_steps": 30,
                         "guidance_scale": 7.5,
