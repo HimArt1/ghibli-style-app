@@ -11,7 +11,7 @@ st.markdown("Upload an image and transform it into a dreamy Ghibli-style scene."
 
 # مفتاح Replicate
 import os
-REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
+REPLICATE_API_TOKEN = os.getenv("r8_2fNlzrrLBTSegyle0qeTn99PH7viVXO3Ngn7s")
 replicate_client = replicate.Client(api_token=REPLICATE_API_TOKEN)
 
 # رفع الصورة
