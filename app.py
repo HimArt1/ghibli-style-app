@@ -1,46 +1,54 @@
 import streamlit as st
 import replicate
+import os
 import requests
 from PIL import Image
 from io import BytesIO
-import os
+import base64
 
-# إعداد الصفحة
-st.set_page_config(page_title="Ghibli Style Image Generator", layout="centered")
-st.title("Ghibli Style Image Generator")
-st.markdown("Upload a photo and generate a dreamy Ghibli-style anime image!")
-
-# تحميل التوكن من secrets
+# إعداد التوكن
 REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
 replicate.Client(api_token=REPLICATE_API_TOKEN)
 
+# إعداد الصفحة
+st.set_page_config(page_title="Anime Style Generator")
+st.title("Anime Style Image Generator")
+st.markdown("Upload your photo and get an anime-style version!")
+
 # رفع صورة
 uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
-prompt = st.text_input("Describe the Ghibli scene", value="ghibli style anime, dreamy landscape")
+
+# وصف المشهد
+prompt = st.text_input("Describe the anime scene", value="a dreamy anime landscape, ghibli style")
 
 if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
-    st.image(image, caption="Original Image", use_column_width=True)
+    st.image(image, caption="Original Image", use_container_width=True)
 
-    if st.button("Generate Ghibli-style Image"):
+    # تحويل الصورة إلى base64
+    buffered = BytesIO()
+    image.save(buffered, format="PNG")
+    img_str = base64.b64encode(buffered.getvalue()).decode()
+
+    if st.button("Generate Anime Image"):
         with st.spinner("Generating..."):
             try:
-                # رفع الصورة إلى موقع مؤقت
-                image_bytes = BytesIO()
-                image.save(image_bytes, format="PNG")
-                image_bytes.seek(0)
-                response = requests.post("https://api.imgbb.com/1/upload", {
-                    "key": "YOUR_IMGBB_API_KEY",  # استبدل هذا بمفتاح imgbb الخاص بك (مجاني)
-                }, files={"image": image_bytes})
-                image_url = response.json()["data"]["url"]
-
-                # استدعاء نموذج مجاني
                 output = replicate.run(
-                    "lucataco/animagine-xl",
-                    input={"prompt": prompt, "image": image_url}
+                    "cjwbw/anything-v3-better-vae:db21e45c2f2eb1a1b8e079b1671ec9bfa16e14221f5cb3d47d08c5863b2c982b",
+                    input={
+                        "prompt": prompt,
+                        "image": f"data:image/png;base64,{img_str}",
+                        "scale": 7,
+                        "steps": 30,
+                        "strength": 0.6,
+                        "scheduler": "K_EULER_ANCESTRAL"
+                    }
                 )
 
-                st.image(output, caption="Ghibli-style Image", use_column_width=True)
+                # عرض الصورة الناتجة
+                result_url = output["image"]
+                st.image(result_url, caption="Anime-style Result", use_container_width=True)
+                st.markdown(f"[Download Image]({result_url})")
 
             except Exception as e:
                 st.error(f"Error generating image: {e}")
