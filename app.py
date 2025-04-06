@@ -10,7 +10,7 @@ st.set_page_config(page_title="Ghibli Style Generator", layout="centered")
 st.title("Ghibli Style Image Generator")
 st.markdown("Upload an image and transform it into a dreamy Ghibli-style artwork!")
 
-# التوكن من Streamlit Secrets
+# التوكن من أسرار ستريملت
 REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
 replicate_client = replicate.Client(api_token=REPLICATE_API_TOKEN)
 
@@ -26,9 +26,9 @@ if uploaded_file:
         with st.spinner("Generating..."):
             try:
                 output = replicate_client.run(
-                    "stability-ai/sdxl:8abfe3b5f50a400e8c1b5fdfb473cd65cbdfc6fc95fdf5869346c743a9ba0b84",
+                    "stability-ai/sdxl",
                     input={
-                        "prompt": "ghibli style, fantasy anime scene, dreamy landscape, soft colors, sunlight, beautiful lighting",
+                        "prompt": "Ghibli style, fantasy anime scene, dreamy landscape, soft colors, sunlight, beautiful lighting",
                         "image": BytesIO(image_bytes),
                         "strength": 0.5,
                         "guidance_scale": 7.5,
