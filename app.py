@@ -5,12 +5,10 @@ from PIL import Image
 from io import BytesIO
 import os
 
-# إعداد الصفحة
 st.set_page_config(page_title="Ghibli Style Generator", layout="centered")
 st.title("Ghibli Style Image Generator")
 st.markdown("Upload an image and transform it into a dreamy Ghibli-style artwork!")
 
-# التوكن من السكريت
 REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
 replicate_client = replicate.Client(api_token=REPLICATE_API_TOKEN)
 
@@ -29,7 +27,7 @@ if uploaded_file:
                 output = replicate_client.run(
                     "stability-ai/sdxl-img2img",
                     input={
-                        "image": image,
+                        "image": BytesIO(image_bytes),
                         "prompt": prompt,
                         "strength": 0.6,
                         "guidance_scale": 7.5,
