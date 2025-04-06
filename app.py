@@ -33,9 +33,9 @@ if uploaded_file:
     if st.button("Generate Anime Image"):
         with st.spinner("Generating..."):
             try:
-                output = replicate.run(
-                    "cjwbw/anything-v3-better-vae:db21e45c2f2eb1a1b8e079b1671ec9bfa16e14221f5cb3d47d08c5863b2c982b",
-                    input={
+                
+output = replicate.run(
+    "cjwbw/anything-v3-better-vae:<‏09a5805203f4c12da649ec1923bb7729517ca25fcac790e640eaa9ed66573b65>",
                         "prompt": prompt,
                         "image": f"data:image/png;base64,{img_str}",
                         "scale": 7,
