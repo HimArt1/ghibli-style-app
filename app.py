@@ -10,11 +10,11 @@ st.set_page_config(page_title="Ghibli Style Generator", layout="centered")
 st.title("Ghibli Style Image Generator")
 st.markdown("Upload an image and transform it into a dreamy Ghibli-style artwork!")
 
-# التوكن من أسرار ستريملت
+# الحصول على التوكن من ستريملت سكريتس
 REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
 replicate_client = replicate.Client(api_token=REPLICATE_API_TOKEN)
 
-# واجهة رفع الصور
+# رفع صورة
 uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
@@ -28,19 +28,16 @@ if uploaded_file:
         with st.spinner("Generating image... please wait"):
             try:
                 output = replicate_client.run(
-                    "fofr/anything-v3.0",
+                    "stability-ai/sdxl",
                     input={
-                        "image": BytesIO(image_bytes),
                         "prompt": prompt,
-                        "width": 512,
-                        "height": 512,
-                        "guidance_scale": 7.5,
+                        "image": BytesIO(image_bytes),
+                        "strength": 0.7,
                         "num_inference_steps": 30,
-                        "strength": 0.7
+                        "guidance_scale": 7.5
                     }
                 )
 
-                # عرض الصورة الناتجة
                 result_url = output[0] if isinstance(output, list) else output
                 response = requests.get(result_url)
                 result_image = Image.open(BytesIO(response.content))
