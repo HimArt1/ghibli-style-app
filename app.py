@@ -10,7 +10,8 @@ st.title("Ghibli Style Image Generator")
 st.markdown("Upload an image and transform it into a dreamy Ghibli-style scene.")
 
 # مفتاح Replicate
-REPLICATE_API_TOKEN = "r8_Br8ZNutdnlWRFUXf8MOBjEci9YWuxAL4LTHJa"
+import os
+REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
 replicate_client = replicate.Client(api_token=REPLICATE_API_TOKEN)
 
 # رفع الصورة
