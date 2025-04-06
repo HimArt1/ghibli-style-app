@@ -35,15 +35,16 @@ if uploaded_file:
             try:
                 
 output = replicate.run(
-    "cjwbw/anything-v3-better-vae:<‏09a5805203f4c12da649ec1923bb7729517ca25fcac790e640eaa9ed66573b65>",
-                        "prompt": prompt,
-                        "image": f"data:image/png;base64,{img_str}",
-                        "scale": 7,
-                        "steps": 30,
-                        "strength": 0.6,
-                        "scheduler": "K_EULER_ANCESTRAL"
-                    }
-                )
+    "cjwbw/anything-v3-better-vae:<09a5805203f4c12da649ec1923bb7729517ca25fcac790e640eaa9ed66573b65>",
+    input={
+        "prompt": prompt,
+        "image": f"data:image/png;base64,{img_str}",
+        "scale": 7,
+        "steps": 30,
+        "strength": 0.6,
+        "scheduler": "K_EULER_ANCESTRAL"
+    }
+)
 
                 # عرض الصورة الناتجة
                 result_url = output["image"]
