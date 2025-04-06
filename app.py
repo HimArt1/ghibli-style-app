@@ -14,7 +14,7 @@ st.markdown("Upload an image and transform it into a dreamy Ghibli-style artwork
 REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
 replicate_client = replicate.Client(api_token=REPLICATE_API_TOKEN)
 
-# رفع صورة
+# واجهة رفع الصور
 uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
@@ -22,24 +22,29 @@ if uploaded_file:
     image = Image.open(BytesIO(image_bytes)).convert("RGB")
     st.image(image, caption="Original Image", use_container_width=True)
 
+    prompt = st.text_input("Describe your Ghibli scene", value="ghibli style, dreamy background, soft lighting")
+
     if st.button("Generate Ghibli-style Image"):
-        with st.spinner("Generating..."):
+        with st.spinner("Generating image... please wait"):
             try:
                 output = replicate_client.run(
-                    "stability-ai/sdxl",
+                    "fofr/anything-v3.0",
                     input={
-                        "prompt": "Ghibli style, fantasy anime scene, dreamy landscape, soft colors, sunlight, beautiful lighting",
                         "image": BytesIO(image_bytes),
-                        "strength": 0.5,
+                        "prompt": prompt,
+                        "width": 512,
+                        "height": 512,
                         "guidance_scale": 7.5,
-                        "num_inference_steps": 30
+                        "num_inference_steps": 30,
+                        "strength": 0.7
                     }
                 )
 
+                # عرض الصورة الناتجة
                 result_url = output[0] if isinstance(output, list) else output
                 response = requests.get(result_url)
                 result_image = Image.open(BytesIO(response.content))
-                st.success("Ghibli-style image created!")
+                st.success("Done! Here's your Ghibli-style image")
                 st.image(result_image, caption="Ghibli Result", use_container_width=True)
                 st.markdown(f"[Download Image]({result_url})")
 
