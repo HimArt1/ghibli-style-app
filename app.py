@@ -5,43 +5,48 @@ from PIL import Image
 from io import BytesIO
 
 # إعداد الصفحة
-st.set_page_config(page_title="Ghibli Style Converter", layout="centered")
-st.title("Ghibli Style Image Converter")
-st.markdown("Upload an image and click the button below to generate a dreamy Ghibli-style scene!")
+st.set_page_config(page_title="Ghibli Style Image Generator", layout="centered")
+st.title("Ghibli Style Image Generator")
+st.markdown("Upload an image and transform it into a dreamy Ghibli-style scene.")
 
-# مفتاح Replicate API
+# مفتاح Replicate
 REPLICATE_API_TOKEN = "ضع_توكن_Replicate_هنا"
 replicate_client = replicate.Client(api_token=REPLICATE_API_TOKEN)
 
-# واجهة رفع الصورة
-uploaded_file = st.file_uploader("Upload an image (JPG, PNG)", type=["jpg", "jpeg", "png"])
+# رفع الصورة
+uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 
-# معالجة الصورة
-if uploaded_file:
+if uploaded_file is not None:
     image = Image.open(uploaded_file).convert("RGB")
-    st.image(image, caption="Original Image", use_column_width=True)
+    st.image(image, caption="Original Image", use_container_width=True)
 
-    # زر التحويل
     if st.button("Generate Ghibli Image"):
-        with st.spinner("Generating image, please wait..."):
+        with st.spinner("Creating Ghibli-style art..."):
             try:
-                output_url = replicate_client.run(
-                    "fofr/anything-v4.0:7e0c09fc79ee8b19d4f804a8d3da8cf7e811b148a772dfb671a2c7c00c2c3c3b",
+                # إرسال الصورة كنص بايت
+                output = replicate_client.run(
+                    "cjwbw/anything-v4.0",  # نموذج Stable Diffusion متوافق
                     input={
+                        "prompt": "ghibli style, anime scene, dreamy, vibrant colors, soft light",
                         "image": BytesIO(uploaded_file.read()),
-                        "prompt": "ghibli style, dreamy, soft colors, anime landscape, cinematic",
-                        "num_inference_steps": 30,
-                        "guidance_scale": 7.5,
                         "width": 512,
-                        "height": 512
+                        "height": 512,
+                        "strength": 0.6,
+                        "num_inference_steps": 30,
+                        "guidance_scale": 7.5
                     }
                 )
 
+                # عرض النتيجة
+                if isinstance(output, list):
+                    output_url = output[0]
+                else:
+                    output_url = output
+
                 response = requests.get(output_url)
-                result_image = Image.open(BytesIO(response.content))
-                st.success("Ghibli image created successfully!")
-                st.image(result_image, caption="Ghibli Style Result", use_column_width=True)
+                result = Image.open(BytesIO(response.content))
+                st.image(result, caption="Ghibli Style Result", use_container_width=True)
                 st.markdown(f"[Download Image]({output_url})")
 
             except Exception as e:
-                st.error(f"An error occurred while generating the image: {e}")
+                st.error(f"Error generating image: {e}")
